@@ -8,7 +8,7 @@ from sshtunnel import SSHTunnelForwarder
 
 
 app = Flask(__name__)
-app.config.from_pyfile("app.conf")
+app.config.from_pyfile("conf/app.conf")
 
 
 @app.route("/")
@@ -62,9 +62,9 @@ def update_labels():
 
 
 def get_mongodb_client():
-    mongo_host = "163.221.132.91"
-    mongo_user = "gao"
-    mongo_pass = "520jerry"
+    mongo_host = app.config['MONGO_SERVER']
+    mongo_user = app.config['MONGO_USER']
+    mongo_pass = app.config['MONGO_PASS']
     server = SSHTunnelForwarder(
         mongo_host,
         ssh_username=mongo_user,
