@@ -65,7 +65,7 @@ function initTable() {
                 width: 100,
                 formatter: function (value, row, index) {
                     var offensive = row['offensive'];
-                    return ['<select class="selectpicker" id="offensive_' + row['ori_id'] + '" data-style="btn-primary" title="Offensive" data-width="fit">',
+                    return ['<select class="selectpicker pull-left" id="offensive_' + row['ori_id'] + '" data-style="btn-primary" title="Offensive" data-width="fit">',
                         '<option data-icon="fas fa-check-circle" value="OFF"' + (offensive && offensive === "OFF" ? 'selected' : '') + '>OFF</option>',
                         '<option data-icon="fas fa-times-circle" value="NOT"' + (offensive && offensive === "NOT" ? 'selected' : '') + '>NOT</option>',
                         '<option value="Unreadable" data-content="<span class=\'badge badge-danger\'>Unreadable</span>"' + (offensive && offensive === "Unreadable" ? 'selected' : '') + '>Unreadable</option>',
@@ -111,7 +111,7 @@ function initTable() {
                 formatter: function (value, row, index) {
                     var offensive = row['offensive'];
                     var target = row['target'];
-                    return ['<select class="selectpicker" id="target_' + row['ori_id'] + '" ' + (offensive && offensive === 'OFF' ? '' : 'disabled') + ' data-style="btn-success" title="Target" data-width="fit">',
+                    return ['<select class="selectpicker pull-left" id="target_' + row['ori_id'] + '" ' + (offensive && offensive === 'OFF' ? '' : 'disabled') + ' data-style="btn-success" title="Target" data-width="fit">',
                         '<option data-icon="fas fa-user" value="IND"' + (target && target === "IND" ? 'selected' : '') + '>IND</option>',
                         '<option data-icon="fas fa-users" value="GRP"' + (target && target === "GRP" ? 'selected' : '') + '>GRP</option>',
                         '<option data-icon="fas fa-building" value="OTH"' + (target && target === "OTH" ? 'selected' : '') + '>OTH</option>',
@@ -135,7 +135,7 @@ function initTable() {
                 formatter: function (value, row, index) {
                     var offensive = row['offensive'];
                     var type = row['type'];
-                    return ['<select class="selectpicker" id="type_' + row['ori_id'] + '" ' + (offensive && offensive === 'OFF' ? '' : 'disabled') + ' data-style="btn-warning" title="Type" data-width="fit">',
+                    return ['<select class="selectpicker pull-left" id="type_' + row['ori_id'] + '" ' + (offensive && offensive === 'OFF' ? '' : 'disabled') + ' data-style="btn-warning" title="Type" data-width="fit">',
                         '<option data-icon="far fa-meh-blank" value="RAC"' + (type && type === "RAC" ? 'selected' : '') + '>RAC</option>',
                         '<option data-icon="fas fa-venus-mars" value="SEX"' + (type && type === "SEX" ? 'selected' : '') + '>SEX</option>',
                         '<option data-icon="fas fa-frown-open" value="PAT"' + (type && type === "PAT" ? 'selected' : '') + '>PAT</option>',
