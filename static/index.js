@@ -1,5 +1,5 @@
 function initTable() {
-    var url = prefix + '/samples';
+    var url = $('#prefix').val() + '/samples';
     $('#table').bootstrapTable('destroy');
     $('#table').bootstrapTable({
         // data: getSamples(),
@@ -155,7 +155,7 @@ function initTable() {
 }
 
 function update_samples(data, event) {
-    var url = prefix + "/update";
+    var url = $('#prefix').val() + "/update";
     $.ajax({
         type: "post",
         url: url,
@@ -187,8 +187,6 @@ function update_samples(data, event) {
 }
 
 $(function () {
-    var prefix = $('#prefix').val();
-
     initTable();
 
     $('#modal').on('show.bs.modal', function () {
