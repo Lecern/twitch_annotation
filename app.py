@@ -4,6 +4,7 @@ import pymongo
 from flask import Flask, request, make_response, jsonify, render_template
 from datetime import datetime
 from bson import ObjectId
+from sshtunnel import SSHTunnelForwarder
 
 
 app = Flask(__name__)
@@ -57,8 +58,22 @@ def update_labels():
         return make_response({'result': 'fail', 'error': str(e)})
 
 
+def get_mongodb_client():
+    mongo_host = "163.221.132.91"
+    mongo_user = "gao"
+    mongo_pass = "520jerry"
+    server = SSHTunnelForwarder(
+        mongo_host,
+        ssh_username=mongo_user,
+        ssh_password=mongo_pass,
+        remote_bind_address=('127.0.0.1', 27017)
+    )
+    server.start()
+    return pymongo.MongoClient("127.0.0.1", server.local_bind_port)
+
+
 if __name__ == "__main__":
-    client = pymongo.MongoClient()
+    client = get_mongodb_client()
     try:
         collection = client['twitch_comments']['annotation']
         app.run(port=8092, debug=True)
