@@ -1,5 +1,5 @@
 function initTable() {
-    var url = prefix + '/samples'
+    var url = prefix + '/samples';
     $('#table').bootstrapTable('destroy');
     $('#table').bootstrapTable({
         // data: getSamples(),
@@ -155,7 +155,7 @@ function initTable() {
 }
 
 function update_samples(data, event) {
-    var url = prefix + /update
+    var url = prefix + "/update";
     $.ajax({
         type: "post",
         url: url,
