@@ -1,9 +1,10 @@
 function initTable() {
-    // $('#table').bootstrapTable('destroy');
+    var url = prefix + '/samples'
+    $('#table').bootstrapTable('destroy');
     $('#table').bootstrapTable({
         // data: getSamples(),
         method: "get",
-        url: "/samples",
+        url: url,
         toolbar: "#toolbar",
         sidePagination: "true",
         striped: true,
@@ -154,9 +155,10 @@ function initTable() {
 }
 
 function update_samples(data, event) {
+    var url = prefix + /update
     $.ajax({
         type: "post",
-        url: '/update',
+        url: url,
         async: false,
         data: JSON.stringify(data),
         contentType: "application/json; charset=utf-8",
@@ -185,6 +187,8 @@ function update_samples(data, event) {
 }
 
 $(function () {
+    var prefix = $('#prefix').val();
+
     initTable();
 
     $('#modal').on('show.bs.modal', function () {
