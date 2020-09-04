@@ -8,11 +8,15 @@ from sshtunnel import SSHTunnelForwarder
 
 
 app = Flask(__name__)
+app.config.from_pyfile("app.conf")
 
 
 @app.route("/")
 def init():
-    return render_template('index.html')
+    prefix = ''
+    if env == 'production':
+        prefix = "/annotation"
+    return render_template('index.html', prefix=prefix)
 
 
 @app.route("/samples", methods=["GET"])
@@ -21,7 +25,6 @@ def get_samples():
     for doc in collection.find({}, {"_id": 0}):
         doc['ori_id'] = str(doc['ori_id'])
         all_samples.append(doc)
-    # all_samples = [doc for doc in )]
     return make_response(jsonify(all_samples))
 
 
@@ -73,9 +76,13 @@ def get_mongodb_client():
 
 
 if __name__ == "__main__":
-    client = get_mongodb_client()
+    env = app.config['ENV']
+    if env == 'development':
+        client = pymongo.MongoClient()
+    elif env == 'production':
+        client = get_mongodb_client()
     try:
         collection = client['twitch_comments']['annotation']
-        app.run(port=8092, debug=True)
+        app.run(port=8092)
     finally:
         client.close()
