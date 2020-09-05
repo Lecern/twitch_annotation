@@ -215,10 +215,20 @@ function update_samples(data, event) {
 
 function do_on_cell_html_data(cell, row, col, data) {
     if (row > 0 && (col === 2 || col === 3 || col === 4)) {
-        const regex = /.*selected="">([a-zA-Z]{3,10}).*/g;
+        const regex = /.*selected.+?>([a-zA-Z]+?)<.*/gm;
         const subst = `$1`;
         const result = data.replace(regex, subst);
-        if (result.length === 10 || result.length === 3) {
+        if (typeof (result) != 'undefined' && result.length <= 10) {
+            return result;
+        } else {
+            return '';
+        }
+    }
+    if (row > 0 && col === 5) {
+        const regex = /.*value="(.*?)".*/gm;
+        const subst = `$1`;
+        const result = data.replace(regex, subst);
+        if (typeof (result) != 'undefined' && result.length > 0) {
             return result;
         } else {
             return '';
