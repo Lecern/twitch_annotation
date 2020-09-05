@@ -61,7 +61,18 @@ def update_labels():
         return make_response({'result': 'fail', 'error': str(e)})
 
 
+@app.route("/notes", methods=["POST"])
+def update_notes():
+    data = json.loads(str(request.get_data(), "utf-8"))
+    try:
+        result = collection.update_one({'ori_id': ObjectId(data['ori_id'])}, {'$set': {'notes': data['notes']}})
+        return make_response({'result': 'success'})
+    except Exception as e:
+        return make_response({'result': 'fail', 'error': str(e)})
+
+
 def get_mongodb_client():
+    global client, server
     mongo_host = app.config['MONGO_SERVER']
     mongo_user = app.config['MONGO_USER']
     mongo_pass = app.config['MONGO_PASS']
@@ -72,17 +83,23 @@ def get_mongodb_client():
         remote_bind_address=('127.0.0.1', 27017)
     )
     server.start()
-    return pymongo.MongoClient("127.0.0.1", server.local_bind_port)
+    client = pymongo.MongoClient("127.0.0.1", server.local_bind_port)
+    return client, server
 
 
 if __name__ == "__main__":
+    server = None
+    client = None
     env = app.config['ENV']
     if env == 'development':
         client = pymongo.MongoClient()
     elif env == 'production':
-        client = get_mongodb_client()
+        client, server = get_mongodb_client()
     try:
         collection = client['twitch_comments']['annotation']
         app.run(port=8092)
     finally:
-        client.close()
+        if client:
+            client.close()
+        if server:
+            server.close()

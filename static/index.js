@@ -1,16 +1,15 @@
-function initTable() {
-    var url = $('#prefix').val() + '/samples';
+function init_table() {
     $('#table').bootstrapTable('destroy');
     $('#table').bootstrapTable({
         // data: getSamples(),
         method: "get",
-        url: url,
+        url: $('#prefix').val() + '/samples',
         toolbar: "#toolbar",
         sidePagination: "true",
         striped: true,
         uniqueId: "ori_id",
         pageSize: 5,
-        pageList: [5, 10, 50, 100, 500, 1000],
+        pageList: [5, 10, 50, 100, 500, 1000, 5000],
         pagination: true,
         paginationShowPageGo: true,
         sortable: false,
@@ -19,7 +18,13 @@ function initTable() {
         showRefresh: true,
         pageNumber: 1,
         showExport: true,
-        exportTypes: ['Excel', 'Text', 'Json'],
+        exportDataType: 'all',
+        exportTypes: ['excel', 'json', 'csv'],
+        exportOptions: {
+            fileName: 'twitch_annotation_data',
+            onCellHtmlData: do_on_cell_html_data
+            // onCellData: do_on_cell_data
+        },
         onPostBody: function () {
             $('.selectpicker').selectpicker({});
         },
@@ -54,7 +59,9 @@ function initTable() {
             },
             {
                 field: 'comment',
-                title: 'Post'
+                title: 'Post',
+                align: 'center',
+                valign: 'middle'
             },
             {
                 field: 'offensive',
@@ -105,6 +112,7 @@ function initTable() {
             {
                 field: 'target',
                 title: 'Target',
+                titleTooltip: 'Does it has a target?',
                 align: 'center',
                 valign: 'middle',
                 width: 100,
@@ -129,6 +137,7 @@ function initTable() {
             {
                 field: 'type',
                 title: 'Type',
+                titleTooltip: 'What type is it?',
                 align: 'center',
                 valign: 'middle',
                 width: 100,
@@ -149,16 +158,34 @@ function initTable() {
                         update_samples(row, e);
                     }
                 }
+            },
+            {
+                field: 'notes',
+                title: 'Notes',
+                align: 'center',
+                valign: 'middle',
+                width: 200,
+                formatter: function (value, row, index) {
+                    var ori_id = row['ori_id'];
+                    var notes = row['notes'];
+                    if (typeof (notes) === 'undefined' || notes === 'null') {
+                        notes = '';
+                    }
+                    return ['<div class="input-group">',
+                        '<input type="text" class="form-control" id="notes_' + row['ori_id'] + '" placeholder="" value="' + notes + '"  onkeydown="on_key_down(event, \'' + ori_id + '\')" >',
+                        '<div class="input-group-append">',
+                        '<button type="button" onclick="update_notes(\'' + ori_id + '\')" class="btn btn-sm btn-info"><i class="fa fa-check"></i></button>',
+                        '</div></div>'].join("");
+                }
             }
         ]
     });
 }
 
 function update_samples(data, event) {
-    var url = $('#prefix').val() + "/update";
     $.ajax({
         type: "post",
-        url: url,
+        url: $('#prefix').val() + "/update",
         async: false,
         data: JSON.stringify(data),
         contentType: "application/json; charset=utf-8",
@@ -186,8 +213,65 @@ function update_samples(data, event) {
     });
 }
 
+function do_on_cell_html_data(cell, row, col, data) {
+    if (row > 0 && (col === 2 || col === 3 || col === 4)) {
+        const regex = /.*selected="">([a-zA-Z]{3,10}).*/g;
+        const subst = `$1`;
+        const result = data.replace(regex, subst);
+        if (result.length === 10 || result.length === 3) {
+            return result;
+        } else {
+            return '';
+        }
+    }
+    return data;
+}
+
+function do_on_cell_data(cell, row, col, data) {
+    if (row > 0 && (col === 2 || col === 3 || col === 4)) {
+        var data_split = data.split(" ");
+        console.log(data)
+        if (data_split.length > 0 && typeof (data_split[1]) !== "undefined") {
+            return data_split[1];
+        } else {
+            return '';
+        }
+    }
+    return data;
+}
+
+function update_notes(ori_id) {
+    var notes = $('#notes_' + ori_id).val();
+    if (notes.length > 0) {
+        var data = {'ori_id': ori_id, 'notes': notes};
+        $.ajax({
+            type: "post",
+            url: $('#prefix').val() + '/notes',
+            data: JSON.stringify(data),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (result) {
+                if (result['result'] === 'fail') {
+                    alert(result['error']);
+                } else {
+                    $('#table').bootstrapTable('refresh');
+                }
+            }
+        });
+    }
+}
+
+function on_key_down(e, ori_id) {
+    var keyCode = null;
+    if(e.which) keyCode = e.which;
+    else if(e.keyCode) keyCode = e.keyCode;
+    if (keyCode === 13) {
+        update_notes(ori_id);
+    }
+}
+
 $(function () {
-    initTable();
+    init_table();
 
     $('#modal').on('show.bs.modal', function () {
         var $this = $(this);
@@ -195,4 +279,5 @@ $(function () {
         $this.css('display', 'block');
         $modal_dialog.css({'margin-top': Math.max(0, ($(window).height() - $modal_dialog.height()) / 2)});
     });
+
 });
