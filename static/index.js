@@ -1,4 +1,5 @@
 function init_table(is_sample_page) {
+    var page_list = [50, 100, 500, 1000, 5000];
     $('#table').bootstrapTable('destroy');
     $('#table').bootstrapTable({
         // data: getSamples(),
@@ -8,8 +9,8 @@ function init_table(is_sample_page) {
         sidePagination: "true",
         striped: true,
         uniqueId: "ori_id",
-        pageSize: 5,
-        pageList: [50, 100, 500, 1000, 5000],
+        pageSize: page_list[0],
+        pageList: page_list,
         pagination: true,
         paginationShowPageGo: true,
         sortable: false,
