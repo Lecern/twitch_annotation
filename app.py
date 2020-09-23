@@ -16,13 +16,17 @@ def init():
     prefix = ''
     if env == 'production':
         prefix = "/annotation"
-    return render_template('index.html', prefix=prefix)
+    return render_template('index.html', prefix=prefix, is_sample=0)
 
 
-@app.route("/samples", methods=["GET"])
+@app.route("/samples", methods=["GET", "POST"])
 def get_samples():
+    query_params = request.args.get('is_sample')
+    find_query = {}
+    if query_params:
+        find_query['sample'] = int(query_params)
     all_samples = []
-    for doc in collection.find({}, {"_id": 0}):
+    for doc in collection.find(find_query, {"_id": 0}):
         doc['ori_id'] = str(doc['ori_id'])
         all_samples.append(doc)
     return make_response(jsonify(all_samples))
@@ -69,6 +73,14 @@ def update_notes():
         return make_response({'result': 'success'})
     except Exception as e:
         return make_response({'result': 'fail', 'error': str(e)})
+
+
+@app.route("/sample", methods=["GET"])
+def sample_page():
+    prefix = ''
+    if env == 'production':
+        prefix = "/annotation"
+    return render_template('index.html', prefix=prefix, is_sample=1)
 
 
 def get_mongodb_client():

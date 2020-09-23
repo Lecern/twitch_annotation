@@ -1,4 +1,4 @@
-function init_table() {
+function init_table(is_sample_page) {
     $('#table').bootstrapTable('destroy');
     $('#table').bootstrapTable({
         // data: getSamples(),
@@ -18,6 +18,8 @@ function init_table() {
         showRefresh: true,
         pageNumber: 1,
         showExport: true,
+        queryParams: {'is_sample': is_sample_page},
+        queryParamsType: 'limit',
         exportDataType: 'all',
         exportTypes: ['excel', 'json', 'csv'],
         exportOptions: {
@@ -281,7 +283,8 @@ function on_key_down(e, ori_id) {
 }
 
 $(function () {
-    init_table();
+    var is_sample_page = $('#is_sample').val();
+    init_table(is_sample_page);
 
     $('#modal').on('show.bs.modal', function () {
         var $this = $(this);
