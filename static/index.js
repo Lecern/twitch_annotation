@@ -1,4 +1,4 @@
-function init_table(is_sample_page) {
+function init_table() {
     var page_list = [50, 100, 500, 1000, 5000];
     $('#table').bootstrapTable('destroy');
     $('#table').bootstrapTable({
@@ -19,7 +19,7 @@ function init_table(is_sample_page) {
         showRefresh: true,
         pageNumber: 1,
         showExport: true,
-        queryParams: {'is_sample': is_sample_page},
+        queryParams: {'is_sample': $('#is_sample').val()},
         queryParamsType: 'limit',
         exportDataType: 'all',
         exportTypes: ['excel', 'json', 'csv'],
@@ -284,8 +284,7 @@ function on_key_down(e, ori_id) {
 }
 
 $(function () {
-    var is_sample_page = $('#is_sample').val();
-    init_table(is_sample_page);
+    init_table();
 
     $('#modal').on('show.bs.modal', function () {
         var $this = $(this);
