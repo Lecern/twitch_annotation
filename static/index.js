@@ -63,7 +63,7 @@ function init_table() {
             {
                 field: 'comment',
                 title: 'Post',
-                align: 'center',
+                // align: 'center',
                 valign: 'middle'
             },
             {
