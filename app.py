@@ -1,34 +1,50 @@
 import json
+import math
+from datetime import datetime
 
 import pymongo
-from flask import Flask, request, make_response, jsonify, render_template
-from datetime import datetime
 from bson import ObjectId
+from flask import Flask, request, make_response, jsonify, render_template
 from sshtunnel import SSHTunnelForwarder
-
 
 app = Flask(__name__)
 app.config.from_pyfile("conf/app.conf")
 
 
-@app.route("/")
-def init():
-    prefix = ''
-    if env == 'production':
-        prefix = "/annotation"
-    return render_template('index.html', prefix=prefix, is_sample=0)
+# @app.route("/")
+# def init():
+#     prefix = ''
+#     if env == 'production':
+#         prefix = "/annotation"
+#     return render_template('index.html', prefix=prefix, is_sample=0)
 
 
 @app.route("/samples", methods=["GET", "POST"])
 def get_samples():
-    query_params = request.args.get('is_sample')
+    is_sample = int(request.args.get('is_sample'))
+    total = int(request.args.get('total'))
+    number = int(request.args.get('number'))
     find_query = {}
-    if query_params:
-        find_query['sample'] = int(query_params)
     all_samples = []
-    for doc in collection.find(find_query, {"_id": 0}):
-        doc['ori_id'] = str(doc['ori_id'])
-        all_samples.append(doc)
+    if total is not None and number is not None and total >= number:
+        results = None
+        find_query['sample'] = 0
+        count = collection.count_documents(find_query)
+        if total > 0 and number > 0:
+            single_size = math.ceil(count / total)
+            skip = single_size * (number - 1)
+            results = collection.find(find_query, {"_id": 0}).limit(single_size).skip(skip)
+        elif total == 0 and number == 0:
+            results = collection.find(find_query, {"_id": 0})
+        if results:
+            for doc in results:
+                doc['ori_id'] = str(doc['ori_id'])
+                all_samples.append(doc)
+    if is_sample is not None and is_sample > 0:
+        find_query['sample'] = int(is_sample)
+        for doc in collection.find(find_query, {"_id": 0}):
+            doc['ori_id'] = str(doc['ori_id'])
+            all_samples.append(doc)
     return make_response(jsonify(all_samples))
 
 
@@ -80,7 +96,23 @@ def sample_page():
     prefix = ''
     if env == 'production':
         prefix = "/annotation"
-    return render_template('index.html', prefix=prefix, is_sample=1)
+    return render_template('index.html', prefix=prefix, is_sample=1, total=-1, number=-1)
+
+
+@app.route("/<total>/<number>", methods=["GET"])
+def split_data(total, number):
+    prefix = ''
+    if env == 'production':
+        prefix = "/annotation"
+    return render_template('index.html', prefix=prefix, is_sample=0, total=total, number=number)
+
+
+@app.route("/0", methods=['GET'])
+def total_data():
+    prefix = ''
+    if env == 'production':
+        prefix = "/annotation"
+    return render_template('index.html', prefix=prefix, is_sample=0, total=0, number=0)
 
 
 def get_mongodb_client():
@@ -97,6 +129,24 @@ def get_mongodb_client():
     server.start()
     client = pymongo.MongoClient("127.0.0.1", server.local_bind_port)
     return client, server
+
+
+def get_count_pipeline():
+    return [
+        {
+            u"$group": {
+                u"_id": {},
+                u"COUNT(*)": {
+                    u"$sum": 1
+                }
+            }
+        },
+        {
+            u"$project": {
+                u"COUNT(*)": u"$COUNT(*)",
+                u"_id": 0
+            }
+        }]
 
 
 if __name__ == "__main__":

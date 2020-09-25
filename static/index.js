@@ -19,7 +19,11 @@ function init_table() {
         showRefresh: true,
         pageNumber: 1,
         showExport: true,
-        queryParams: {'is_sample': $('#is_sample').val()},
+        queryParams: {
+            'is_sample': $('#is_sample').val(),
+            'total': $('#total').val(),
+            'number': $('#number').val()
+        },
         queryParamsType: 'limit',
         exportDataType: 'all',
         exportTypes: ['excel', 'json', 'csv'],
