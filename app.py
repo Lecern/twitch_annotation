@@ -6,6 +6,7 @@ import pymongo
 from bson import ObjectId
 from flask import Flask, request, make_response, jsonify, render_template
 from sshtunnel import SSHTunnelForwarder
+from waitress import serve
 
 app = Flask(__name__)
 app.config.from_pyfile("conf/app.conf")
@@ -159,7 +160,7 @@ if __name__ == "__main__":
         client, server = get_mongodb_client()
     try:
         collection = client['twitch_comments']['annotation']
-        app.run(port=8092)
+        serve(app, port=8082)
     finally:
         if client:
             client.close()
