@@ -160,7 +160,7 @@ if __name__ == "__main__":
         client, server = get_mongodb_client()
     try:
         collection = client['twitch_comments']['annotation']
-        serve(app, port=8082)
+        serve(app, port=8092)
     finally:
         if client:
             client.close()
