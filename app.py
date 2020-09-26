@@ -151,16 +151,17 @@ def get_count_pipeline():
 
 
 if __name__ == "__main__":
-    server = None
-    client = None
+    server, client = None, None
     env = app.config['ENV']
-    if env == 'development':
-        client = pymongo.MongoClient()
-    elif env == 'production':
-        client, server = get_mongodb_client()
     try:
-        collection = client['twitch_comments']['annotation']
-        serve(app, port=8092)
+        if env == 'development':
+            client = pymongo.MongoClient()
+            collection = client['twitch_comments']['annotation']
+            app.run(port=8092)
+        elif env == 'production':
+            client, server = get_mongodb_client()
+            collection = client['twitch_comments']['annotation']
+            serve(app, port=8092)
     finally:
         if client:
             client.close()
