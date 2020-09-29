@@ -1,5 +1,5 @@
 function init_table() {
-    var page_list = [50, 100, 500, 1000, 5000];
+    var page_list = [50, 100, 500, 1000, 5000, 10000];
     $('#table').bootstrapTable('destroy');
     $('#table').bootstrapTable({
         // data: getSamples(),
