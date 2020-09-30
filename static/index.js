@@ -1,5 +1,5 @@
 function init_table() {
-    var page_list = [50, 100, 500, 1000, 5000, 10000];
+    var page_list = [50, 100, 500, 1000, 5000];
     $('#table').bootstrapTable('destroy');
     $('#table').bootstrapTable({
         // data: getSamples(),
@@ -52,17 +52,17 @@ function init_table() {
             visible: false
         },
             {
-                field: 'Number',
+                field: 'order',
                 title: '#',
                 align: 'center',
                 valign: 'middle',
                 width: 20,
-                formatter: function (value, row, index) {
-                    return index + 1;
-                    // var pageSize=$('#table').bootstrapTable('getOptions').pageSize;
-                    // var pageNumber=$('#table').bootstrapTable('getOptions').pageNumber;
-                    // return pageSize * (pageNumber - 1) + index + 1;
-                }
+                // formatter: function (value, row, index) {
+                //     return index + 1;
+                //     // var pageSize=$('#table').bootstrapTable('getOptions').pageSize;
+                //     // var pageNumber=$('#table').bootstrapTable('getOptions').pageNumber;
+                //     // return pageSize * (pageNumber - 1) + index + 1;
+                // }
             },
             {
                 field: 'comment',

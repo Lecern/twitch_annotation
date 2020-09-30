@@ -34,9 +34,9 @@ def get_samples():
         if total > 0 and number > 0:
             single_size = math.ceil(count / total)
             skip = single_size * (number - 1)
-            results = collection.find(find_query, {"_id": 0}).limit(single_size).skip(skip)
+            results = collection.find(find_query, {"_id": 0}, sort=[('order', 1)]).limit(single_size).skip(skip)
         elif total == 0 and number == 0:
-            results = collection.find(find_query, {"_id": 0})
+            results = collection.find(find_query, {"_id": 0}, sort=[('order', 1)])
         if results:
             for doc in results:
                 doc['ori_id'] = str(doc['ori_id'])
