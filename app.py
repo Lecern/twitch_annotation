@@ -116,11 +116,14 @@ def total_data():
     return render_template('index.html', prefix=prefix, is_sample=0, total=0, number=0)
 
 
+# connect to remote mongodb on Kogecha
 def get_mongodb_client():
     global client, server
     mongo_host = app.config['MONGO_SERVER']
     mongo_user = app.config['MONGO_USER']
     mongo_pass = app.config['MONGO_PASS']
+    if not mongo_user or not mongo_pass:
+        raise Exception("MongoDB username or password should not be null. Please check app.conf file.")
     server = SSHTunnelForwarder(
         mongo_host,
         ssh_username=mongo_user,
@@ -132,36 +135,21 @@ def get_mongodb_client():
     return client, server
 
 
-def get_count_pipeline():
-    return [
-        {
-            u"$group": {
-                u"_id": {},
-                u"COUNT(*)": {
-                    u"$sum": 1
-                }
-            }
-        },
-        {
-            u"$project": {
-                u"COUNT(*)": u"$COUNT(*)",
-                u"_id": 0
-            }
-        }]
-
-
 if __name__ == "__main__":
     server, client = None, None
     env = app.config['ENV']
+    db = app.config['DATABASE']
+    coll = app.config['COLLECTION']
+    port = int(app.config['PORT'])
     try:
         if env == 'development':
             client = pymongo.MongoClient()
-            collection = client['twitch_comments']['annotation']
-            app.run(port=8092)
+            collection = client[db][coll]
+            app.run(port=port)
         elif env == 'production':
             client, server = get_mongodb_client()
-            collection = client['twitch_comments']['annotation']
-            serve(app, port=8092)
+            collection = client[db][coll]
+            serve(app, port=port)
     finally:
         if client:
             client.close()
