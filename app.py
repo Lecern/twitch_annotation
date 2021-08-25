@@ -135,6 +135,8 @@ def get_mongodb_client():
     return client, server
 
 
+# If you want to use the remote database, please fill in the username & pwd in conf/app.conf for **logging into Kegecha**
+# !!!Never use the "annotation" collection from the "twitch_comments" database!!!
 if __name__ == "__main__":
     server, client = None, None
     env = app.config['ENV']
